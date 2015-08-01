@@ -4,5 +4,7 @@
         <attr name="defaultFill" format="integer"/>
         <attr name="circumference" format="integer"/>
         <attr name="spinning" format="boolean"/>
+        <attr name="fillColor" format="color"/>
+        <attr name="backgroundColor" format="color"/>
     </declare-styleable>
 </resources>
