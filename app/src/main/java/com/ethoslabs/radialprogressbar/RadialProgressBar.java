@@ -3,7 +3,6 @@ package com.ethoslabs.radialprogressbar;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
@@ -29,8 +28,9 @@ public class RadialProgressBar extends View {
 
     protected int diameter = 0;
 
-    protected RectF interiorOval;
-    protected Path mPath;
+    protected RectF circleBounds;
+    protected Path backgroundPath;
+    protected Path fillPath;
 
     public RadialProgressBar(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
@@ -64,7 +64,7 @@ public class RadialProgressBar extends View {
             defaultFill = a.getInt(R.styleable.RadialProgressBar_defaultFill, 0);
             spinning = a.getBoolean(R.styleable.RadialProgressBar_spinning, false);
             backgroundColor = a.getColor(R.styleable.RadialProgressBar_backgroundColor, context.getResources().getColor(R.color.accent_material_dark));
-            fillColor = a.getColor(R.styleable.RadialProgressBar_backgroundColor, context.getResources().getColor(R.color.accent_material_light));
+            fillColor = a.getColor(R.styleable.RadialProgressBar_fillColor, context.getResources().getColor(R.color.accent_material_light));
         }finally{
             a.recycle();
         }
@@ -107,6 +107,9 @@ public class RadialProgressBar extends View {
     }
 
     public void init(){
+
+        currentFill = defaultFill;
+
         backgroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         fillPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
@@ -133,16 +136,21 @@ public class RadialProgressBar extends View {
         float centerX = getWidth()/2;
         float centerY = getHeight()/2;
 
-        interiorOval = new RectF();
-        interiorOval.set(centerX - size, centerY - size, centerX + size, centerY + size);
-        mPath = new Path();
+        circleBounds = new RectF();
+        circleBounds.set(centerX - size, centerY - size, centerX + size, centerY + size);
+        backgroundPath = new Path();
         float endAngle = 360.f*((float)circumference/100.f);
-        mPath.addArc(interiorOval, -0, endAngle);
+        backgroundPath.addArc(circleBounds, -0, endAngle);
 
         Matrix mMatrix = new Matrix();
         mMatrix.postRotate(-90, centerX, centerY);
-        mPath.transform(mMatrix);
+        backgroundPath.transform(mMatrix);
 
+        fillPath = new Path();
+        endAngle = endAngle*((float)currentFill/100.f);
+        fillPath.addArc(circleBounds, 0, endAngle);
+
+        fillPath.transform(mMatrix);
 
 
     }
@@ -210,8 +218,8 @@ public class RadialProgressBar extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        canvas.drawPath(mPath, backgroundPaint);
-//        canvas.drawLine(0, 0, diameter, diameter, backgroundPaint);
+        canvas.drawPath(backgroundPath, backgroundPaint);
+        canvas.drawPath(fillPath, fillPaint);
 
     }
 }
