@@ -10,7 +10,7 @@
         android:id="@+id/progress_bar"
         android:layout_width="350dp"
         android:layout_height="350dp"
-        app:defaultFill="85"
+        app:defaultFill="0"
         app:backgroundColor="@color/colorPrimaryLight"
         app:fillColor="@color/white"
         app:circumference="75"

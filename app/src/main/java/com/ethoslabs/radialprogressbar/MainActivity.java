@@ -1,5 +1,6 @@
 package com.ethoslabs.radialprogressbar;
 
+import android.os.Handler;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -18,8 +19,22 @@ public class MainActivity extends ActionBarActivity {
 
         progressBar = (RadialProgressBar) findViewById(R.id.progress_bar);
 
-        Log.i("this is a log statement", "log");
     }
+
+    @Override
+    protected void onPostResume() {
+        super.onPostResume();
+
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                progressBar.animateFillTo(75, 1500);
+            }
+        }, 1000);
+    }
+
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

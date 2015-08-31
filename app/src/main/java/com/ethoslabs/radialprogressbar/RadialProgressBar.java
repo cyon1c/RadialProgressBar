@@ -1,5 +1,6 @@
 package com.ethoslabs.radialprogressbar;
 
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
@@ -9,6 +10,12 @@ import android.graphics.Path;
 import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.view.View;
+import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.AnticipateInterpolator;
+import android.view.animation.DecelerateInterpolator;
+import android.view.animation.Interpolator;
+import android.view.animation.OvershootInterpolator;
 
 /**
  * Created by John on 7/28/2015.
@@ -31,6 +38,12 @@ public class RadialProgressBar extends View {
     protected RectF circleBounds;
     protected Path backgroundPath;
     protected Path fillPath;
+
+    protected Matrix mRotationMatrix;
+    float mBackgroundAngle;
+    float mFillAngle;
+
+    protected ValueAnimator valueAnimator;
 
     public RadialProgressBar(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
@@ -139,19 +152,19 @@ public class RadialProgressBar extends View {
         circleBounds = new RectF();
         circleBounds.set(centerX - size, centerY - size, centerX + size, centerY + size);
         backgroundPath = new Path();
-        float endAngle = 360.f*((float)circumference/100.f);
-        backgroundPath.addArc(circleBounds, -0, endAngle);
+        mBackgroundAngle = 360.f*((float)circumference/100.f);
+        backgroundPath.addArc(circleBounds, -0, mBackgroundAngle);
 
-        Matrix mMatrix = new Matrix();
-        mMatrix.postRotate(-90, centerX, centerY);
-        backgroundPath.transform(mMatrix);
+        //the rotation matrix is used to start the fill at 12 o'clock.
+        mRotationMatrix = new Matrix();
+        mRotationMatrix.postRotate(-90, centerX, centerY);
+        backgroundPath.transform(mRotationMatrix);
 
         fillPath = new Path();
-        endAngle = endAngle*((float)currentFill/100.f);
-        fillPath.addArc(circleBounds, 0, endAngle);
+        mFillAngle = mBackgroundAngle*((float)currentFill/100.f);
+        fillPath.addArc(circleBounds, 0, mFillAngle);
 
-        fillPath.transform(mMatrix);
-
+        fillPath.transform(mRotationMatrix);
 
     }
 
@@ -222,4 +235,31 @@ public class RadialProgressBar extends View {
         canvas.drawPath(fillPath, fillPaint);
 
     }
+
+    public void animateFillTo(int newValue, int forHowLongMillis){
+        animateFillToWithInterpolator(newValue, forHowLongMillis, new AccelerateInterpolator());
+    }
+
+    public void animateFillToWithInterpolator(int newValue, int forHowLongMillis, Interpolator interp){
+        valueAnimator = ValueAnimator.ofInt(currentFill, newValue);
+        valueAnimator.setInterpolator(interp);
+        valueAnimator.setDuration(forHowLongMillis);
+        valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                currentFill = (int) animation.getAnimatedValue();
+
+                fillPath.rewind();
+                mFillAngle = mBackgroundAngle * ((float) currentFill / 100.f);
+                fillPath.addArc(circleBounds, 0, mFillAngle);
+
+                fillPath.transform(mRotationMatrix);
+
+                invalidate();
+            }
+        });
+        valueAnimator.start();
+    }
+
+
 }
