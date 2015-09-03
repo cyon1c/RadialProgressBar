@@ -15,9 +15,9 @@ public class MainActivity extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_main2);
 
-        progressBar = (RadialProgressBar) findViewById(R.id.progress_bar);
+//        progressBar = (RadialProgressBar) findViewById(R.id.progress_bar);
 
     }
 
@@ -25,13 +25,13 @@ public class MainActivity extends ActionBarActivity {
     protected void onPostResume() {
         super.onPostResume();
 
-        Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                progressBar.animateFillTo(75, 1500);
-            }
-        }, 1000);
+//        Handler handler = new Handler();
+//        handler.postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                progressBar.animateFillTo(75, 1500);
+//            }
+//        }, 1000);
     }
 
 

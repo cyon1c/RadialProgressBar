@@ -3,8 +3,12 @@
     <declare-styleable name="RadialProgressBar">
         <attr name="defaultFill" format="integer"/>
         <attr name="circumference" format="integer"/>
-        <attr name="spinning" format="boolean"/>
         <attr name="fillColor" format="color"/>
         <attr name="backgroundColor" format="color"/>
+    </declare-styleable>
+    <declare-styleable name="IndeterminateRadialBar">
+        <attr name="spinning" format="boolean"/>
+        <attr name="ifillColor" format="color"/>
+        <attr name="ibackgroundColor" format="color"/>
     </declare-styleable>
 </resources>

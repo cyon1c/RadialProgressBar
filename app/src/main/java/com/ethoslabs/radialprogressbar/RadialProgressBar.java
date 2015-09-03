@@ -25,7 +25,6 @@ public class RadialProgressBar extends View {
     protected int circumference = 75;
     protected int defaultFill = 0;
     protected int currentFill = 0;
-    protected boolean spinning = false;
     protected int backgroundColor = 0;
     protected int fillColor = 0;
 
@@ -47,27 +46,18 @@ public class RadialProgressBar extends View {
 
     public RadialProgressBar(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        TypedArray a = context.getTheme().obtainStyledAttributes(
-                attrs,
-                R.styleable.RadialProgressBar,
-                0, 0);
-
-        try{
-            circumference = a.getInt(R.styleable.RadialProgressBar_circumference, 75);
-            defaultFill = a.getInt(R.styleable.RadialProgressBar_defaultFill, 0);
-            spinning = a.getBoolean(R.styleable.RadialProgressBar_spinning, false);
-            backgroundColor = a.getColor(R.styleable.RadialProgressBar_backgroundColor, context.getResources().getColor(R.color.accent_material_dark));
-            fillColor = a.getColor(R.styleable.RadialProgressBar_backgroundColor, context.getResources().getColor(R.color.accent_material_light));
-        }finally{
-            a.recycle();
-        }
         mContext = context;
+        extractAttrs(attrs);
     }
 
     public RadialProgressBar(Context context, AttributeSet attrs) {
         super(context, attrs);
         mContext = context;
-        TypedArray a = context.getTheme().obtainStyledAttributes(
+        extractAttrs(attrs);
+    }
+
+    private void extractAttrs(AttributeSet attrs){
+        TypedArray a = mContext.getTheme().obtainStyledAttributes(
                 attrs,
                 R.styleable.RadialProgressBar,
                 0, 0);
@@ -75,18 +65,11 @@ public class RadialProgressBar extends View {
         try{
             circumference = a.getInt(R.styleable.RadialProgressBar_circumference, 75);
             defaultFill = a.getInt(R.styleable.RadialProgressBar_defaultFill, 0);
-            spinning = a.getBoolean(R.styleable.RadialProgressBar_spinning, false);
-            backgroundColor = a.getColor(R.styleable.RadialProgressBar_backgroundColor, context.getResources().getColor(R.color.accent_material_dark));
-            fillColor = a.getColor(R.styleable.RadialProgressBar_fillColor, context.getResources().getColor(R.color.accent_material_light));
+            backgroundColor = a.getColor(R.styleable.RadialProgressBar_backgroundColor, mContext.getResources().getColor(R.color.accent_material_dark));
+            fillColor = a.getColor(R.styleable.RadialProgressBar_fillColor, mContext.getResources().getColor(R.color.accent_material_light));
         }finally{
             a.recycle();
         }
-    }
-
-    public RadialProgressBar(Context context) {
-        super(context);
-        mContext = context;
-
     }
 
     public int getCircumference() {
@@ -105,16 +88,6 @@ public class RadialProgressBar extends View {
 
     public void setDefaultFill(int defaultFill) {
         this.defaultFill = defaultFill;
-        invalidate();
-        requestLayout();
-    }
-
-    public boolean isSpinning() {
-        return spinning;
-    }
-
-    public void setSpinning(boolean spinning) {
-        this.spinning = spinning;
         invalidate();
         requestLayout();
     }
