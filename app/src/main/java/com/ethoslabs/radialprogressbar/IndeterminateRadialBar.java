@@ -12,8 +12,6 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
 
-import java.util.ArrayList;
-
 /**
  * Created by john.white on 9/2/15.
  */
@@ -33,13 +31,17 @@ public class IndeterminateRadialBar extends View {
     protected Path[] backgroundPaths = new Path[4];
     protected Path[] fillPaths = new Path[4];
 
-    protected static final float[] mSizeMods = {.5f, .37f, .24f, .11f};
+    protected static final float[] mSizeMods = {.5f, .4f, .3f, .2f};
 
     protected static final int[] mFillAngles = {200, 160, 120, 80};
 
     protected float[] mStartAngles = new float[4];
 
     protected ValueAnimator[] valueAnimator = new ValueAnimator[4];
+    protected Matrix[] mRotationMatrices = new Matrix[4];
+
+    float centerX;
+    float centerY;
 
     public IndeterminateRadialBar(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -153,8 +155,8 @@ public class IndeterminateRadialBar extends View {
         fillPaint.setColor(fillColor);
 
         float size;
-        float centerX = getWidth()/2;
-        float centerY = getHeight()/2;
+        centerX = getWidth()/2;
+        centerY = getHeight()/2;
 
         for(int i = 0; i < 4; i++) {
             size = diameter * mSizeMods[i];
@@ -166,72 +168,73 @@ public class IndeterminateRadialBar extends View {
             mStartAngles[i] = (float)Math.random() * 360f;
             fillPaths[i] = new Path();
             fillPaths[i].addArc(circleBounds[i], mStartAngles[i], mFillAngles[i]);
+            mRotationMatrices[i] = new Matrix();
+            mRotationMatrices[i].postRotate(mStartAngles[i], centerX, centerY);
         }
-        valueAnimator[0] = ValueAnimator.ofFloat(0f, 360f);
+        valueAnimator[0] = ValueAnimator.ofFloat(mFillAngles[0], 360+mFillAngles[0]);
         valueAnimator[0].setInterpolator(new LinearInterpolator());
-        valueAnimator[0].setDuration(10000);
-        valueAnimator[0].setRepeatMode(ValueAnimator.INFINITE);
+        valueAnimator[0].setDuration(1500);
+        valueAnimator[0].setRepeatCount(ValueAnimator.INFINITE);
         valueAnimator[0].addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
 
-                mStartAngles[0] = mStartAngles[0] + (float) animation.getAnimatedValue();
+                mStartAngles[0] = (float) animation.getAnimatedValue();
                 if (mStartAngles[0] >= 360f)
                     mStartAngles[0] = mStartAngles[0] - 360f;
 
                 fillPaths[0].rewind();
                 fillPaths[0].addArc(circleBounds[0], mStartAngles[0], mFillAngles[0]);
-
+                mRotationMatrices[0] = new Matrix();
                 invalidate();
+
             }
         });
-        valueAnimator[1] = ValueAnimator.ofFloat(0f, 360f);
+        valueAnimator[1] = ValueAnimator.ofFloat(mFillAngles[1], 360+mFillAngles[1]);
         valueAnimator[1].setInterpolator(new LinearInterpolator());
-        valueAnimator[1].setDuration(10000);
-        valueAnimator[1].setRepeatMode(ValueAnimator.INFINITE);
+        valueAnimator[1].setDuration(1500);
+        valueAnimator[1].setRepeatCount(ValueAnimator.INFINITE);
         valueAnimator[1].addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
 
-                mStartAngles[1] = mStartAngles[1] - (float) animation.getAnimatedValue();
+                mStartAngles[1] = -(float) animation.getAnimatedValue();
                 if (mStartAngles[1] <= 0f)
                     mStartAngles[1] = mStartAngles[1] + 360f;
 
                 fillPaths[1].rewind();
                 fillPaths[1].addArc(circleBounds[1], mStartAngles[1], mFillAngles[1]);
-
                 invalidate();
             }
         });
 
-        valueAnimator[2] = ValueAnimator.ofFloat(0f, 360f);
+        valueAnimator[2] = ValueAnimator.ofFloat(mFillAngles[2], 360+mFillAngles[2]);
         valueAnimator[2].setInterpolator(new LinearInterpolator());
-        valueAnimator[2].setDuration(10000);
-        valueAnimator[2].setRepeatMode(ValueAnimator.INFINITE);
+        valueAnimator[2].setDuration(1500);
+        valueAnimator[2].setRepeatCount(ValueAnimator.INFINITE);
         valueAnimator[2].addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
 
-                mStartAngles[2] = mStartAngles[2] + (float) animation.getAnimatedValue();
+                mStartAngles[2] = (float) animation.getAnimatedValue();
                 if (mStartAngles[2] >= 360f)
                     mStartAngles[2] = mStartAngles[2] - 360f;
 
                 fillPaths[2].rewind();
                 fillPaths[2].addArc(circleBounds[2], mStartAngles[2], mFillAngles[2]);
-
                 invalidate();
             }
         });
 
-        valueAnimator[3] = ValueAnimator.ofFloat(0f, 360f);
+        valueAnimator[3] = ValueAnimator.ofFloat(mFillAngles[3], 360+mFillAngles[3]);
         valueAnimator[3].setInterpolator(new LinearInterpolator());
-        valueAnimator[3].setDuration(10000);
-        valueAnimator[3].setRepeatMode(ValueAnimator.INFINITE);
+        valueAnimator[3].setDuration(1500);
+        valueAnimator[3].setRepeatCount(ValueAnimator.INFINITE);
         valueAnimator[3].addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
 
-                mStartAngles[3] = mStartAngles[3] - (float) animation.getAnimatedValue();
+                mStartAngles[3] = -(float) animation.getAnimatedValue();
                 if (mStartAngles[3] <= 0f)
                     mStartAngles[3] = mStartAngles[3] + 360f;
 
@@ -241,9 +244,6 @@ public class IndeterminateRadialBar extends View {
                 invalidate();
             }
         });
-
-
-
     }
 
     @Override
@@ -262,12 +262,12 @@ public class IndeterminateRadialBar extends View {
         canvas.drawPath(backgroundPaths[3], backgroundPaint);
         canvas.drawPath(fillPaths[3], fillPaint);
 
-        if(spinning){
-            indeterminateSpin();
-        }
+//        if(spinning){
+//            indeterminateSpin();
+//        }
     }
 
-    public void indeterminateSpin(){
+    public void indeterminateSpin() {
         valueAnimator[0].start();
         valueAnimator[1].start();
         valueAnimator[2].start();

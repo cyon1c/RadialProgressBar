@@ -8,6 +8,7 @@
     tools:context=".MainActivity">
 
     <com.ethoslabs.radialprogressbar.IndeterminateRadialBar
+        android:id="@+id/progress_bar"
         android:layout_width="160dp"
         android:layout_height="160dp"
         app:ibackgroundColor="@color/colorPrimaryLight"
